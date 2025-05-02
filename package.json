@@ -1,0 +1,33 @@
+{
+  "name": "express-multitenancy",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node examples/app.js",
+    "mongoose-filter": "node examples/mongoose-filter/app.js",
+    "custom-tenant": "node examples/custom-tenant-model/app.js",
+    "claim-strategy": "node examples/claim-strategy/app.js",
+    "base-path": "node examples/base-path/app.js",
+    "config-store": "node examples/config-store/app-with-js-config.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/ioredis": "^4.28.10",
+    "@types/jsonwebtoken": "^9.0.0",
+    "@types/mongoose": "^5.11.97",
+    "@types/redis": "^4.0.10",
+    "jsonwebtoken": "^9.0.2",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
