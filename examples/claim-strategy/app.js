@@ -5,26 +5,40 @@ const { multitenancy, ClaimStrategy, InMemoryStore } = require('../../lib');
 
 const app = express();
 
-// In-memory store for example
+/**
+ * In-memory store for example purposes
+ * In a real application, you would typically use a database store
+ */
 const store = new InMemoryStore([
   { id: 'tenant1', name: 'Tenant One' },
   { id: 'tenant2', name: 'Tenant Two' },
   { id: 'tenant3', name: 'Tenant Three with Nested Claim' }
 ]);
 
-// EXAMPLE 1: Basic claim strategy - extracts tenantId from root claim
+/**
+ * EXAMPLE 1: Basic claim strategy
+ * Extracts tenantId from root level of JWT claim
+ * Example token payload: { "sub": "123", "tenantId": "tenant1" }
+ */
 app.use('/api/basic', multitenancy({
   strategies: [new ClaimStrategy('tenantId', { debug: true })],
   store
 }));
 
-// EXAMPLE 2: Nested claim - extracts tenant from app_metadata.tenant_id
+/**
+ * EXAMPLE 2: Nested claim strategy
+ * Extracts tenant ID from a nested property path in the JWT
+ * Example token payload: { "sub": "123", "app_metadata": { "tenant_id": "tenant3" } }
+ */
 app.use('/api/nested', multitenancy({
   strategies: [new ClaimStrategy('app_metadata.tenant_id', { debug: true })],
   store
 }));
 
-// EXAMPLE 4: With Passport.js authentication
+/**
+ * EXAMPLE 3: Integration with Passport.js authentication
+ * Demonstrates how to combine authentication with tenant identification
+ */
 const JWT_SECRET = 'your-secret-key';
 
 // Configure Passport JWT strategy
@@ -41,7 +55,6 @@ passport.use(new JwtStrategy(jwtOptions, (payload, done) => {
 
 // Initialize Passport
 app.use(passport.initialize());
-
 
 // First authenticate with passport, then use the tenant identification
 app.use('/api/passport', 
@@ -61,7 +74,10 @@ app.use('/api/passport',
   })
 );
 
-// Sample API endpoint available under all strategy routes
+/**
+ * Sample API endpoint available under all strategy routes
+ * Will respond differently depending on the tenant context
+ */
 const apiHandler = (req, res) => {
   if (!req.tenant) {
     return res.status(401).json({ 

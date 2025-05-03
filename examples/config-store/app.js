@@ -5,16 +5,23 @@ const path = require('path');
 // Create an Express application
 const app = express();
 
-// Create a config-based tenant store using the JS configuration file
+/**
+ * Create a config-based tenant store using the JS configuration file
+ * 
+ * Benefits:
+ * - Configuration is stored in a JavaScript file for easy editing
+ * - File watching enabled for automatic reloading
+ * - Can contain custom tenant properties and logic
+ */
 const store = new ConfigStore({
   configPath: path.join(__dirname, 'tenants.js'),
-  watchFile: true,
+  watchFile: true, // Automatically reload when config file changes
   onReload: () => console.log('Tenant configuration reloaded!')
 });
 
 // Set up the tenancy middleware with a default header-based strategy
 app.use(multitenancy({
-  strategies: [new HeaderStrategy()],
+  strategies: [new HeaderStrategy()], // Uses default header 'x-tenant-id'
   store,
 }));
 

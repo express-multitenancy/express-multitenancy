@@ -1,32 +1,73 @@
 {
   "name": "express-multitenancy",
-  "version": "1.0.0",
+  "version": "0.0.3",
+  "description": "Express middleware for managing multi-tenant applications with configurable tenant resolution strategies",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
-    "build": "tsc",
+    "clean": "rimraf dist",
+    "build": "npm run clean && tsc",
     "start": "node examples/app.js",
-    "mongoose-filter": "node examples/mongoose-filter/app.js",
-    "custom-tenant": "node examples/custom-tenant-model/app.js",
-    "claim-strategy": "node examples/claim-strategy/app.js",
-    "base-path": "node examples/base-path/app.js",
-    "config-store": "node examples/config-store/app-with-js-config.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "prepublishOnly": "npm run build",
+    "lint": "eslint --ext .ts ./lib",
+    "lint:fix": "eslint --ext .ts ./lib --fix",
+    "format": "prettier --write \"lib/**/*.ts\"",
+    "format:check": "prettier --check \"lib/**/*.ts\""
   },
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "author": "Zahid Cakici <zahid.cakici@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/express-multitenancy/express-multitenancy.git"
+  },
+  "keywords": [
+    "express",
+    "multitenancy",
+    "multitenant",
+    "tenant",
+    "middleware",
+    "saas",
+    "node-multitenancy",
+    "nodejs",
+    "tenant-management",
+    "tenant-strategy"
+  ],
+  "bugs": {
+    "url": "https://github.com/express-multitenancy/express-multitenancy/issues"
+  },
+  "homepage": "https://github.com/express-multitenancy/express-multitenancy#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "dependencies": {
-    "express": "^5.1.0"
+    "express": ">=4.0.0 <6.0.0"
   },
   "devDependencies": {
-    "@types/express": "^5.0.1",
+    "@types/express": "^4.17.13",
     "@types/ioredis": "^4.28.10",
+    "@types/jest": "^29.5.14",
     "@types/jsonwebtoken": "^9.0.0",
-    "@types/mongoose": "^5.11.97",
-    "@types/redis": "^4.0.10",
-    "jsonwebtoken": "^9.0.2",
-    "passport": "^0.7.0",
-    "passport-jwt": "^4.0.1",
+    "@types/supertest": "^6.0.3",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "jest": "^29.7.0",
+    "jest-environment-node": "^29.7.0",
+    "prettier": "^3.1.1",
+    "prettier-eslint": "^16.4.1",
+    "rimraf": "^5.0.10",
+    "supertest": "^7.1.0",
+    "ts-jest": "^29.3.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }

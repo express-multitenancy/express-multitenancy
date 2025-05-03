@@ -77,6 +77,30 @@ const { HeaderStrategy } = require('express-multitenancy');
 const headerStrategy = new HeaderStrategy('x-tenant-id');
 ```
 
+#### RouteStrategy
+
+Identifies tenants based on route parameters.
+
+```javascript
+const { RouteStrategy } = require('express-multitenancy');
+
+// Create a strategy that extracts tenant ID from 'tenantId' route parameter
+const routeStrategy = new RouteStrategy(); 
+
+// For Express 5 compatibility, mount the middleware on specific routes
+app.use(['/api/:tenantId', '/api/:tenantId/*'], multitenancy({
+  strategies: [routeStrategy],
+  store: myStore
+}));
+
+// Or with a custom parameter name
+const customRouteStrategy = new RouteStrategy('organizationId');
+app.use(['/api/:organizationId', '/api/:organizationId/*'], multitenancy({
+  strategies: [customRouteStrategy],
+  store: myStore
+}));
+```
+
 ### Tenant Storage Providers
 
 #### InMemoryStore

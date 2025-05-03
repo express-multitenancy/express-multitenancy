@@ -1,9 +1,11 @@
 import { Tenant } from './types';
-import { Store, tenantStorage } from './stores';
+import { Store, tenantContext } from './stores';
 import { Request, Response, NextFunction } from 'express';
 import { Strategy } from './strategies';
 
+// We move the Express module augmentation to the top level
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
       /**
@@ -23,18 +25,18 @@ export interface MultitenancyOptions<T extends Tenant = Tenant> {
    * Array of strategies to use for tenant identification, in order of priority
    */
   strategies: Strategy[];
-  
+
   /**
    * Tenant storage provider for retrieving tenant information
    */
   store: Store<T>;
-  
+
   /**
    * Handler for when a tenant ID is resolved but not found in the store
    * If not provided, sets the tenant to null and continues
    */
   onTenantNotFound?: (req: Request, res: Response, next: NextFunction, tenantId: string) => void;
-  
+
   /**
    * Whether to enable debug logging
    * @default false
@@ -44,16 +46,16 @@ export interface MultitenancyOptions<T extends Tenant = Tenant> {
 
 /**
  * Creates Express middleware for multi-tenancy support.
- * 
+ *
  * This middleware attempts to identify the current tenant using provided
  * strategies and stores the tenant information in the request object.
  * It also sets up the tenant context in async local storage for use in
  * other parts of the application, like the Mongoose plugin.
- * 
+ *
  * @param options - Configuration options
- * 
+ *
  * @returns Express middleware function that sets up tenant context
- * 
+ *
  * @example
  * ```
  * // Basic setup with a header strategy
@@ -61,7 +63,7 @@ export interface MultitenancyOptions<T extends Tenant = Tenant> {
  *   strategies: [new HeaderStrategy('x-tenant-id')],
  *   store: new InMemoryStore(tenants)
  * }));
- * 
+ *
  * // With error handling for tenant not found
  * app.use(multitenancy({
  *   strategies: [new HeaderStrategy('x-tenant-id')],
@@ -73,12 +75,7 @@ export interface MultitenancyOptions<T extends Tenant = Tenant> {
  * ```
  */
 export function multitenancy<T extends Tenant = Tenant>(options: MultitenancyOptions<T>) {
-  const { 
-    strategies, 
-    store, 
-    onTenantNotFound,
-    debug = false, 
-  } = options;
+  const { strategies, store, onTenantNotFound, debug = false } = options;
 
   const log = (message: string) => {
     if (debug) {
@@ -100,7 +97,9 @@ export function multitenancy<T extends Tenant = Tenant>(options: MultitenancyOpt
           break;
         }
       } catch (error) {
-        log(`Strategy ${strategy.constructor.name} error: ${error instanceof Error ? error.message : String(error)}`);
+        log(
+          `Strategy ${strategy.constructor.name} error: ${error instanceof Error ? error.message : String(error)}`,
+        );
       }
     }
 
@@ -108,7 +107,7 @@ export function multitenancy<T extends Tenant = Tenant>(options: MultitenancyOpt
     if (!tenantId) {
       log('No tenant context identified');
       req.tenant = null;
-      return tenantStorage.run(null, next);
+      return tenantContext.run(null, next);
     }
 
     // Try to retrieve tenant from store
@@ -118,26 +117,26 @@ export function multitenancy<T extends Tenant = Tenant>(options: MultitenancyOpt
       // Tenant not found in store
       if (!tenant) {
         log(`Tenant with ID ${tenantId} not found in store`);
-        
+
         if (onTenantNotFound) {
           return onTenantNotFound(req, res, next, tenantId);
         }
-        
+
         // No custom handler, continue with null tenant
         req.tenant = null;
-        return tenantStorage.run(null, next);
+        return tenantContext.run(null, next);
       }
 
       // Tenant found, set in request and async storage
       req.tenant = tenant;
-      return tenantStorage.run(tenantId, () => {
+      return tenantContext.run(tenantId, () => {
         log(`Set tenant context to ${tenantId}`);
         next();
       });
     } catch (error) {
       log(`Error retrieving tenant: ${error instanceof Error ? error.message : String(error)}`);
       req.tenant = null;
-      return tenantStorage.run(null, next);
+      return tenantContext.run(null, next);
     }
   };
 }
