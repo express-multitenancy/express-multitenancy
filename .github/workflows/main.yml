@@ -76,7 +76,7 @@ jobs:
       - name: Create GitHub Release
         if: steps.check_tag.outputs.TAG_EXISTS == 'false'
         id: create_release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.package_version.outputs.VERSION }}
           name: Release v${{ steps.package_version.outputs.VERSION }}
@@ -86,7 +86,7 @@ jobs:
       
       - name: Publish to NPM
         if: steps.check_tag.outputs.TAG_EXISTS == 'false'
-        run: npm publish
+        run: npm publish --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       
@@ -99,7 +99,7 @@ jobs:
       
       - name: Upload package to GitHub releases
         if: steps.check_tag.outputs.TAG_EXISTS == 'false'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.package_version.outputs.VERSION }}
           files: express-multitenancy.tgz
