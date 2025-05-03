@@ -1,6 +1,6 @@
 {
   "name": "express-multitenancy",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Express middleware for managing multi-tenant applications with configurable tenant resolution strategies",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
