@@ -1,6 +1,6 @@
 {
   "name": "express-multitenancy",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Express middleware for managing multi-tenant applications with configurable tenant resolution strategies",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -63,6 +63,7 @@
     "eslint-plugin-prettier": "^5.0.1",
     "jest": "^29.7.0",
     "jest-environment-node": "^29.7.0",
+    "jsonwebtoken": "^9.0.2",
     "prettier": "^3.1.1",
     "prettier-eslint": "^16.4.1",
     "rimraf": "^5.0.10",
